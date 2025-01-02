@@ -7,11 +7,11 @@ from docx.oxml import OxmlElement
 def process_document(file_path):
     try:
         doc = Document(file_path)
-        print(f"Документ '{file_path}' успешно загружен.")
+        print(f"🟦 Документ '{file_path}' успешно загружен.")
         print(f"Количество параграфов в документе: {len(doc.paragraphs)}")
         return doc
     except Exception as e:
-        print(f"Ошибка при загрузке документа: {e}")
+        print(f"🟧 Ошибка при загрузке документа: {e}")
         return None
 
 def modify_paragraph_style(paragraph):
@@ -36,18 +36,20 @@ def main(file_path):
     if doc is None:
         return
 
-    for i, paragraph in enumerate(doc.paragraphs):
-        if i < 18 or i > 738:  # Skip paragraphs before page 19 and after page 739
+    processing = False
+    for paragraph in doc.paragraphs:
+        if '%%%%%' in paragraph.text:
+            processing = not processing
             continue
-        if paragraph.text.startswith('№'):
+        if processing and paragraph.text.startswith('№'):
             paragraph.style = doc.styles['Heading 1']
             modify_paragraph_style(paragraph)
-    doc.save('modified_document_1.docx')
+    doc.save('modified_document_3.docx')
 
 # Path to your document
 file_path = '7_1 Сборник бабушкиных стихов.docx'
 main(file_path)
-
+print("🟩 Обработка успешно завершена!")
 
 
 
