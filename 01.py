@@ -4,8 +4,19 @@ from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
+def process_document(file_path):
+    try:
+        doc = Document(file_path)
+        print(f"Документ '{file_path}' успешно загружен.")
+        print(f"Количество параграфов в документе: {len(doc.paragraphs)}")
+        return doc
+    except Exception as e:
+        print(f"Ошибка при загрузке документа: {e}")
+        return None
 
 def modify_paragraph_style(paragraph):
+    if len(paragraph.runs) == 0:
+        return  # Пропустить параграф, если в нем нет runs
     run = paragraph.runs[0]
     run.font.name = 'Times New Roman'
     run.font.bold = True
@@ -19,8 +30,12 @@ def modify_paragraph_style(paragraph):
     spacing.set(qn('w:after'), '60')    # 3pt after
     pPr.append(spacing)
 
-def process_document(file_path):
-    doc = Document(file_path)
+
+def main(file_path):
+    doc = process_document(file_path)
+    if doc is None:
+        return
+
     for i, paragraph in enumerate(doc.paragraphs):
         if i < 18 or i > 738:  # Skip paragraphs before page 19 and after page 739
             continue
@@ -31,7 +46,7 @@ def process_document(file_path):
 
 # Path to your document
 file_path = '7_1 Сборник бабушкиных стихов.docx'
-process_document(file_path)
+main(file_path)
 
 
 
